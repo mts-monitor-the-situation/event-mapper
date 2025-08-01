@@ -11,4 +11,4 @@ def find_item_by_id(item_id):
     :param item_id: The ID of the item to find.
     :return: The item if found, None otherwise.
     """
-    return collection.find_one({"_id": item_id})
+    return collection.find_one({"_id": item_id}, {"_id": 1, "title": 1, "description": 1})

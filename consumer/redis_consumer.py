@@ -1,5 +1,6 @@
 import redis
-from .handler import handle_message
+from mongo import find_item_by_id
+from nlp import process_text
 
 r = redis.Redis(host="localhost", port=6379, db=0)
 
@@ -23,9 +24,23 @@ def start_consumer():
 
             for stream, message_data in messages:
                 for message_id, data in message_data:
-                    print(f"[Raw fields] {data}")
-                    #             print(f"[Stream] {stream} | [ID] {message_id}")
-                    handle_message(data)
+                    # print(f"[Raw fields] {data}")
+                    # print(f"[Stream] {stream} | [ID] {message_id}")
+
+                    # Find item by ID in MongoDB
+                    item_id = data.get(b"id").decode()
+
+                    if item_id:
+                        item = find_item_by_id(item_id)
+                        if item:
+                            # Combine the title and description for NLP processing
+                            text = f"{item.get('title', '')} {item.get('description', '')}"
+                            print(f"Processing item: {item_id} with text: {text}")
+                            res = process_text(text)
+                            print(f"Processed locations: {res}")
+                        else:
+                            print(f"Item with ID {item_id} not found in MongoDB.")
+
                     r.xack("rss:unprocessed", "consumer1", message_id)
 
         except Exception as e:
