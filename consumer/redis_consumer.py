@@ -21,7 +21,7 @@ def start_consumer():
     create_consumer_group()
     while True:
         try:
-            messages = r.xreadgroup(groupname="consumers", consumername="consumer1", streams={"rss:unprocessed": ">"}, count=10, block=5000)  # 5 seconds
+            messages = r.xreadgroup(groupname="consumers", consumername="consumer1", streams={"rss:unprocessed": ">"}, count=10, block=5000)
 
             if not messages:
                 print("No new messages, waiting...")
@@ -29,32 +29,32 @@ def start_consumer():
 
             for _, message_data in messages:
                 for message_id, data in message_data:
-                    # print(f"[Raw fields] {data}")
-                    # print(f"[Stream] {stream} | [ID] {message_id}")
+                    try:
+                        item_id = data.get("id")
+                        item_description = data.get("description")
+                        item_title = data.get("title")
+                        text = f"{item_title} {item_description}".strip()
 
-                    # Find item by ID in MongoDB
-                    item_id = data.get("id")
-                    item_description = data.get("description")
-                    item_title = data.get("title")
+                        res = process_text(text)
 
-                    # Merge title and description for NLP processing
-                    text = f"{item_title} {item_description}".strip()
+                        if res:
+                            update_fields = {"locations": res}
+                            update_result = update_item_by_id(item_id, update_fields)
+                            if update_result.modified_count > 0:
+                                print(f"Updated item {item_id} with locations: {res}")
+                            else:
+                                print(f"No changes made to item {item_id}.")
 
-                    # Process the text to extract locations
-                    res = process_text(text)
+                        # ACK and delete only if processing succeeded
+                        # Requires Redis version >= 8.2.0
+                        # The library doesn't support XACKDEL yet, so we use execute_command directly
+                        args = ["XACKDEL", "rss:unprocessed", "consumers", "ACKED", "IDS", 1, message_id]
+                        r.execute_command(*args)
 
-                    #  Update the item in MongoDB with the processed locations
-                    if res:
-                        update_fields = {"locations": res}
-                        update_result = update_item_by_id(item_id, update_fields)
-                        if update_result.modified_count > 0:
-                            print(f"Updated item {item_id} with locations: {res}")
-                        else:
-                            print(f"No changes made to item {item_id}.")
-                    # Requires Redis version >= 8.2.0
-                    # The library doesn't support XACKDEL yet, so we use execute_command directly
-                    args = ["XACKDEL", "rss:unprocessed", "consumers", "ACKED", "IDS", 1, message_id]
-                    r.execute_command(*args)
+                    except Exception as item_error:
+                        print(f"[ERROR] Failed to process message {message_id}: {item_error}")
+                        # Optional: push to a DLQ stream for later inspection
+                        # r.xadd("rss:failed", {"id": item_id, "reason": str(item_error)})
 
-        except Exception as e:
-            print(f"Error in consumer loop: {e}")
+        except Exception as loop_error:
+            print(f"[FATAL] Error in consumer loop: {loop_error}")
