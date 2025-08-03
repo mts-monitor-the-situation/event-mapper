@@ -2,7 +2,7 @@ from typing import List, Dict, Set
 import spacy
 
 # Load SpaCy transformer model
-nlp = spacy.load("en_core_web_md")
+nlp = spacy.load("en_core_web_trf")
 
 
 def process_text(text: str) -> List[Dict[str, str | float]]:
