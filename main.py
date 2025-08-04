@@ -12,8 +12,8 @@ def main():
     # Handle shutdown signals
     def handle_shutdown(signum, frame):
         print(f"\n[Shutdown] Received signal {signum}. Stopping workers gracefully...")
-        print("Stack at interruption:")
-        traceback.print_stack(frame)
+        # print("Stack at interruption:")
+        # traceback.print_stack(frame)
         stop_event.set()
 
     # Register for SIGTERM (docker/k8s) and SIGINT (Ctrl+C)
