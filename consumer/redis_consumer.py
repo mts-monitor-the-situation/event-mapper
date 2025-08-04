@@ -69,7 +69,7 @@ def retry_stalled_messages(
     retry_consumer="consumer1",
     idle_threshold_ms=10 * 60 * 1000,  # 10 minutes
     batch_size=20,
-    sleep_seconds=10,
+    sleep_seconds=10,  # or even 3600 (1 hour) if you want!
 ):
     print("[Retry] Starting retry monitor...")
     while not stop_event.is_set():
@@ -121,4 +121,8 @@ def retry_stalled_messages(
         except Exception as e:
             print(f"[Retry Fatal] Retry monitor crashed: {e}")
 
-        time.sleep(sleep_seconds)
+        # Responsive sleep: sleep in 1-second chunks, check stop_event
+        for _ in range(sleep_seconds):
+            if stop_event.is_set():
+                break
+            time.sleep(1)
