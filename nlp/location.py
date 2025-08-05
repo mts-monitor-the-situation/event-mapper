@@ -1,4 +1,4 @@
-from typing import List, Dict, Set, TypedDict
+from typing import List, Set, TypedDict
 import spacy
 
 # Load SpaCy transformer model
