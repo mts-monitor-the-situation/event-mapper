@@ -1,11 +1,17 @@
 import googlemaps
-from typing import Dict
+from typing import Dict, TypedDict
 
 
 gmaps = googlemaps.Client(key="")
 
 
-def geocode_location(location: str) -> Dict[str, float]:
+class GeocodeResult(TypedDict):
+    latitude: float
+    longitude: float
+    place_id: str
+
+
+def geocode_location(location: str) -> GeocodeResult:
     """
     Geocode a location using Google Maps API.
     Returns a dictionary with latitude and longitude.
