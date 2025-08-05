@@ -1,5 +1,5 @@
 import googlemaps
-from typing import Dict, TypedDict
+from typing import TypedDict
 
 
 gmaps = googlemaps.Client(key="")
