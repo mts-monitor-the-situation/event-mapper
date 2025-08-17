@@ -1,5 +1,6 @@
 from concurrent.futures import thread
 import redis
+import geocode
 from mongo import update_item_by_id
 from nlp import process_text
 import time
@@ -39,11 +40,13 @@ def start_consumer(stop_event: threading.Event):
 
                         res = process_text(text)
 
-                        if res:
-                            update_fields = {"locations": res}
+                        geocode_results = geocode.geocode_location(res)
+
+                        if geocode_results:
+                            update_fields = {"locations": geocode_results}
                             update_result = update_item_by_id(item_id, update_fields)
                             if update_result.modified_count > 0:
-                                print(f"Updated item {item_id} with locations: {res}")
+                                print(f"Updated item {item_id} with locations: {geocode_results}")
                             else:
                                 print(f"No changes made to item {item_id}.")
 
