@@ -1,23 +1,17 @@
-from typing import List, Set, TypedDict
+from typing import List, Set
 import spacy
 
 # Load SpaCy transformer model
 nlp = spacy.load("en_core_web_trf")
 
 
-class LocationResult(TypedDict):
-    location: str
-    latitude: float
-    longitude: float
-
-
-def process_text(text: str) -> List[LocationResult]:
+def process_text(text: str) -> List[str]:
     """
     Extracts unique location entities (GPE, LOC, FAC) using spaCy.
     Returns a list of dicts with location names and placeholder coordinates.
     """
     doc = nlp(text)
-    results: List[LocationResult] = []
+    results: List[str] = []
     seen: Set[str] = set()
 
     for ent in doc.ents:
@@ -31,6 +25,6 @@ def process_text(text: str) -> List[LocationResult]:
             seen.add(key)
 
             # print(f"Found {ent.label_}: {loc}")
-            results.append({"location": loc, "latitude": 0.0, "longitude": 0.0})
+            results.append(loc)
 
     return results
