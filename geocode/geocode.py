@@ -2,16 +2,13 @@ import googlemaps
 from typing import TypedDict, List
 
 
-gmaps = googlemaps.Client(key="")
-
-
 class GeocodeResult(TypedDict):
     latitude: float
     longitude: float
     place_id: str
 
 
-def geocode_location(locations: List[str]) -> List[GeocodeResult]:
+def geocode_location(client: googlemaps.Client, locations: List[str]) -> List[GeocodeResult]:
     """
     Geocode a list of locations using Google Maps API.
     Returns a list of dictionaries with latitude(s), longitude(s), and place_id(s).
@@ -19,7 +16,7 @@ def geocode_location(locations: List[str]) -> List[GeocodeResult]:
     try:
         results = []
         for location in locations:
-            geocode_result = gmaps.geocode(location)
+            geocode_result = client.geocode(location)
             if not geocode_result:
                 raise ValueError(f"No results found for location: {location}")
 

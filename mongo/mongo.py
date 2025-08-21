@@ -1,11 +1,16 @@
 from pymongo import MongoClient
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["mts"]
-collection = db["feed_items"]
+
+def get_collection(mongodb_connection_string: str):
+    """
+    Get the MongoDB collection for feed items.
+    """
+    client = MongoClient(mongodb_connection_string)
+    db = client["mts"]
+    return db["feed_items"]
 
 
-def find_item_by_id(item_id):
+def find_item_by_id(collection, item_id):
     """
     Find an item in the MongoDB collection by its ID.
     :param item_id: The ID of the item to find.
@@ -14,7 +19,7 @@ def find_item_by_id(item_id):
     return collection.find_one({"_id": item_id}, {"_id": 1, "title": 1, "description": 1})
 
 
-def update_item_by_id(item_id, update_fields):
+def update_item_by_id(collection, item_id, update_fields):
     """
     Update an item in the MongoDB collection.
     :param item_id: The ID of the item to update.

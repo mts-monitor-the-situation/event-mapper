@@ -1,4 +1,4 @@
-from concurrent.futures import thread
+import googlemaps
 import redis
 import geocode
 from mongo import update_item_by_id
@@ -6,10 +6,8 @@ from nlp import process_text
 import time
 import threading
 
-r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
 
-
-def create_consumer_group():
+def create_consumer_group(r: redis.Redis):
     try:
         r.xgroup_create("rss:unprocessed", "consumers", id="0", mkstream=True)
         print("[Consume] Consumer group created.")
@@ -20,8 +18,8 @@ def create_consumer_group():
             raise
 
 
-def start_consumer(stop_event: threading.Event):
-    create_consumer_group()
+def start_consumer(stop_event: threading.Event, r: redis.Redis, collection, gmaps: googlemaps.Client):
+    create_consumer_group(r)
     while not stop_event.is_set():
         try:
             messages = r.xreadgroup(groupname="consumers", consumername="consumer1", streams={"rss:unprocessed": ">"}, count=10, block=5000)
@@ -40,11 +38,11 @@ def start_consumer(stop_event: threading.Event):
 
                         res = process_text(text)
 
-                        geocode_results = geocode.geocode_location(res)
+                        geocode_results = geocode.geocode_location(gmaps, res)
 
                         if geocode_results:
                             update_fields = {"locations": geocode_results}
-                            update_result = update_item_by_id(item_id, update_fields)
+                            update_result = update_item_by_id(collection, item_id, update_fields)
                             if update_result.modified_count > 0:
                                 print(f"Updated item {item_id} with locations: {geocode_results}")
                             else:
@@ -67,6 +65,9 @@ def start_consumer(stop_event: threading.Event):
 
 def retry_stalled_messages(
     stop_event: threading.Event,
+    r: redis.Redis,
+    collection,
+    gmaps: googlemaps.Client,
     stream="rss:unprocessed",
     group="consumers",
     retry_consumer="consumer1",
@@ -103,11 +104,13 @@ def retry_stalled_messages(
 
                         res = process_text(text)
 
-                        if res:
-                            update_fields = {"locations": res}
-                            update_result = update_item_by_id(item_id, update_fields)
+                        geocode_results = geocode.geocode_location(gmaps, res)
+
+                        if geocode_results:
+                            update_fields = {"locations": geocode_results}
+                            update_result = update_item_by_id(collection, item_id, update_fields)
                             if update_result.modified_count > 0:
-                                print(f"[Retry] Updated item {item_id} with locations: {res}")
+                                print(f"[Retry] Updated item {item_id} with locations: {geocode_results}")
                             else:
                                 print(f"[Retry] No changes made to item {item_id}.")
 

@@ -1,4 +1,5 @@
 googlemaps
 spacy
 pymongo
+pyyaml
 redis >= 6.0.0
