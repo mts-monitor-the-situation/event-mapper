@@ -19,7 +19,7 @@ def main():
     mongodb_connection_string = config.get("mongodb_connection_string")
 
     # Initialize Redis and MongoDB connections
-    r = redis.Redis.from_url(redis_connection_string)
+    r = redis.Redis.from_url(redis_connection_string, decode_responses=True)
     collection = get_collection(mongodb_connection_string)
 
     # Initialize Google Maps client
