@@ -1,0 +1,13 @@
+.dockerignore
+Dockerfile
+.gitignore
+*.json
+*.yaml
+*.yml
+.env
+.venv/
+.github/
+venv/
+**/__pycache__/
+LICENSE
+README.md
