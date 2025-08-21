@@ -37,6 +37,12 @@ jobs:
       # HELM_PATH: ${{ github.workspace }}/event-mapper-v0.0.0-latest.tgz
       VERSION: v0.0.0
     steps:
+      - name: Free Space Hack
+        run: |
+          rm -rf /usr/share/dotnet
+          rm -rf "$AGENT_TOOLSDIRECTORY"
+        shell: bash
+      
       - name: Checkout
         uses: actions/checkout@v5
 
