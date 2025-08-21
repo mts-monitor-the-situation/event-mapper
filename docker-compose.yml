@@ -7,7 +7,10 @@ services:
     environment:
       PYTHONUNBUFFERED: "1"
     volumes:
-      - ./config.yaml:/service/config.yaml:ro
+      - type: bind
+        source: ./config.yaml
+        target: /service/config.yaml
+        read_only: true
     networks:
       - mts
     depends_on:
@@ -28,7 +31,8 @@ services:
       - mts
    depends_on:
     - mongodb
-    
+   attach: false
+   
   # MongoDB Service
   mongodb:
    image: mongo:latest
@@ -38,6 +42,7 @@ services:
        protocol: tcp
    networks:
       - mts
+   attach: false
 
 networks:
   mts:
