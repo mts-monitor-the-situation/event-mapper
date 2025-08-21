@@ -25,7 +25,7 @@ services:
     image: ghcr.io/mts-monitor-the-situation/rss-aggregator:latest
     volumes:
       - type: bind
-        source: ./config-rss.yaml
+        source: ./config.rss.yaml
         target: /etc/rss-aggregator/config.yaml
         read_only: true
     networks:

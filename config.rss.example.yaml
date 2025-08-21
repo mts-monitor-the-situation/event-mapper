@@ -1,0 +1,5 @@
+---
+# MongoDB connection string
+MongoDBConnectionString: "mongodb://mongodb:27017"
+# Redis connection string
+RedisConnectionString: "redis:6379"
