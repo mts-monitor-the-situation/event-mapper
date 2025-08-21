@@ -39,8 +39,8 @@ jobs:
     steps:
       - name: Free Space Hack
         run: |
-          rm -rf /usr/share/dotnet
-          rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
         shell: bash
       
       - name: Checkout
