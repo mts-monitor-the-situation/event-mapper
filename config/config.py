@@ -1,4 +1,4 @@
-import pyyaml
+import yaml
 
 
 class Config:
@@ -20,7 +20,7 @@ class Config:
     def load_config(self):
         try:
             with open(self.config_file, "r") as file:
-                return pyyaml.safe_load(file) or {}
+                return yaml.safe_load(file) or {}
         except FileNotFoundError:
             raise FileNotFoundError(f"Config file not found: {self.config_file}")
         except Exception as e:
