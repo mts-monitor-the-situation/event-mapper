@@ -20,6 +20,25 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  # RSS Aggregator Service
+  rss-aggregator:
+    image: ghcr.io/mts-monitor-the-situation/rss-aggregator:latest
+    volumes:
+      - type: bind
+        source: ./config-rss.yaml
+        target: /etc/rss-aggregator/config.yaml
+        read_only: true
+    networks:
+      - mts
+    depends_on:
+      redis:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      event-mapper:
+        condition: service_started
+    restart: no
+
   # Redis Service
   redis:
    image: redis:latest
