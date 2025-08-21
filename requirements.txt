@@ -1,5 +1,5 @@
 googlemaps
-spacy
+spacy >= 3.5
 pymongo
 pyyaml
 redis >= 6.0.0
