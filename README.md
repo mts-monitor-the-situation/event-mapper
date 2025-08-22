@@ -3,10 +3,12 @@
 - [Description](#description)
 - [Maintainers Guide](#maintainers-guide)
   - [Requirements](#requirements)
+  - [Dependency Management](#dependency-management)
+    - [Updating dependencies](#updating-dependencies)
   - [Running the Application](#running-the-application)
     - [Locally](#locally)
     - [Docker](#docker)
-    - [Running the Full MTS Stack](#running-the-full-mts-stack)
+    - [Running the Full MTS Backend Stack](#running-the-full-mts-backend-stack)
 
 
 # Description
@@ -27,6 +29,42 @@ The mapped events are then stored in a MongoDB database for further analysis and
 - Docker(https://docs.docker.com/get-docker/)
 - Redis >= 8.2.0
 - MongoDB
+
+## Dependency Management
+
+We use [pip-tools](https://github.com/jazzband/pip-tools) to manage dependencies.  
+The convention is:
+
+- **`requirements.in`**  
+  Input file listing the top-level dependencies you care about (editable).  
+  Example: `spacy==3.8.7`, `redis`.
+
+- **`requirements.txt`**  
+  Auto-generated lock file with fully pinned, resolved versions (do not edit).  
+  Used by Docker/CI to ensure reproducible installs.
+
+- **`constraints.in`**  
+  Input file for special cases (non-PyPI wheels, overrides).  
+  Example: spaCy model URLs.
+
+- **`constraints.txt`**  
+  Auto-generated lock file for constraints (do not edit).  
+
+---
+
+### Updating dependencies
+
+After editing either `.in` file, re-compile:
+
+```bash
+# Compile constraints first
+pipx run --spec pip-tools pip-compile -o constraints.txt constraints.in
+
+# Then compile requirements, applying constraints
+pipx run --spec pip-tools pip-compile -o requirements.txt -c constraints.txt requirements.in
+```
+
+---
 
 ## Running the Application
 ### Locally
@@ -58,6 +96,9 @@ The mapped events are then stored in a MongoDB database for further analysis and
    ```bash
    python main.py
    ```
+
+---
+
 ### Docker
 1. Build the Docker image:
    ```bash
@@ -73,7 +114,10 @@ The mapped events are then stored in a MongoDB database for further analysis and
    ```bash
    docker run -v $(pwd)/config.yaml:/service/config.yaml event-mapper
    ```
-### Running the Full MTS Stack
+
+---
+
+### Running the Full MTS Backend Stack
 A docker-compose file is provided to run the full MTS backend stack.
 
 This includes

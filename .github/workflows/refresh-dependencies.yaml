@@ -32,8 +32,8 @@ jobs:
 
       - name: Refresh Dependencies
         run: |
-          pipx run --spec pip-tools pip-compile -o constraints.txt constraints.ini
-          pipx run --spec pip-tools pip-compile -o requirements.txt -c constraints.txt requirements.ini
+          pipx run --spec pip-tools pip-compile -o constraints.txt constraints.in
+          pipx run --spec pip-tools pip-compile -o requirements.txt -c constraints.txt requirements.in
         shell: bash
 
       - name: Get MTS Automation App Token
