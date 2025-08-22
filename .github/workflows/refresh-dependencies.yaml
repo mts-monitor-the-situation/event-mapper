@@ -51,7 +51,7 @@ jobs:
           path: requirements.txt
           committer: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_NAME }}'
           committer_email: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_EMAIL }}'
-          message: 'New build [single-commit]'
+          message: 'Update requirements.txt'
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
@@ -61,6 +61,6 @@ jobs:
           path: constraints.txt
           committer: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_NAME }}'
           committer_email: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_EMAIL }}'
-          message: 'New build [single-commit]'
+          message: 'Update constraints.txt'
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
