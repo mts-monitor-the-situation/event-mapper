@@ -34,6 +34,31 @@ jobs:
             requirements.txt
             constraints.txt
 
-      - name: Refresh Dependencies
-        run: |
-          pipx run --spec pip-tools pip-compile -o constraints.txt requirements.txt
+      - name: Get MTS Automation App Token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          app-id: ${{ secrets.MTS_AUTOMATION_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.MTS_AUTOMATION_BOT_PRIVATE_KEY }}
+
+      - name: Update requirements.txt
+        uses: mts-monitor-the-situation/github-actions/single-commit@main
+        with:
+          path: requirements.txt
+          committer: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_NAME }}'
+          committer_email: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_EMAIL }}'
+          message: 'New build [single-commit]'
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Update constraints.txt
+        uses: mts-monitor-the-situation/github-actions/single-commit@main
+        with:
+          path: constraints.txt
+          committer: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_NAME }}'
+          committer_email: '{{ vars.MTS_AUTOMATION_BOT_COMMITTER_EMAIL }}'
+          message: 'New build [single-commit]'
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
