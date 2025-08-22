@@ -1,0 +1,39 @@
+name: Create Latest Release
+
+permissions:
+  contents: write
+  packages: write
+  attestations: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+  # Cron every day at 7:00 AM  which is UTC 7:00 / 8:00 AM CET depending on daylight saving time
+  schedule:
+    - cron: '0 6 * * *'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+
+jobs:
+  refresh:
+    name: Refresh Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            constraints.txt
+
+      - name: Refresh Dependencies
+        run: |
+          pipx run --spec pip-tools pip-compile -o constraints.txt requirements.txt

@@ -45,7 +45,7 @@ The mapped events are then stored in a MongoDB database for further analysis and
      ```
 3. Install the required dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements.txt -c constraints.txt
    ```
 
 4. Start Redis and MongoDB services on default ports without authentication. You can run it locally or use Docker. This step is up to you.

@@ -6,14 +6,14 @@ WORKDIR /workspace
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY main.py requirements.txt ./
+COPY main.py requirements.txt constraints.txt ./
 COPY config/ config/
 COPY consumer/ consumer/
 COPY geocode/ geocode/
 COPY mongo/ mongo/
 COPY nlp/ nlp/
 
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt -c constraints.txt
 
 
 FROM python:3.12-slim AS final
