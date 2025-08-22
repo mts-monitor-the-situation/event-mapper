@@ -162,10 +162,8 @@ jobs:
           # cache-from: type=gha
           # cache-to: type=gha,mode=max
           cache-from: |
-            type=gha
             type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
           cache-to: |
-            type=gha,mode=max
             type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
           annotations: ${{ steps.meta.outputs.annotations }}
 
