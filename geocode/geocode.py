@@ -5,7 +5,7 @@ from typing import TypedDict, List
 class GeocodeResult(TypedDict):
     latitude: float
     longitude: float
-    place_id: str
+    placeId: str
 
 
 def geocode_location(client: googlemaps.Client, locations: List[str]) -> List[GeocodeResult]:
@@ -22,8 +22,8 @@ def geocode_location(client: googlemaps.Client, locations: List[str]) -> List[Ge
 
             lat = geocode_result[0]["geometry"]["location"]["lat"]
             lng = geocode_result[0]["geometry"]["location"]["lng"]
-            place_id = geocode_result[0]["place_id"]
-            results.append({"latitude": lat, "longitude": lng, "place_id": place_id})
+            placeId = geocode_result[0]["place_id"]
+            results.append({"latitude": lat, "longitude": lng, "placeId": placeId})
         return results
     except Exception as e:
         print(f"Error geocoding {location}: {e}")

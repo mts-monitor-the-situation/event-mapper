@@ -41,7 +41,7 @@ def start_consumer(stop_event: threading.Event, r: redis.Redis, collection, gmap
                         geocode_results = geocode.geocode_location(gmaps, res)
 
                         if geocode_results:
-                            update_fields = {"locations": geocode_results}
+                            update_fields = {"locations": geocode_results, "geoLocated": True}
                             update_result = update_item_by_id(collection, item_id, update_fields)
                             if update_result.modified_count > 0:
                                 print(f"Updated item {item_id} with locations: {geocode_results}")
